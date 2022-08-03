@@ -71,7 +71,7 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': true
   }
-  const response = await Axios.get(jwksUrl, {headers: headers})
+  const response = await Axios.get(jwksUrl, {headers})
   const signingKey = response.data['keys'][0].x5c[0]
   const signingCertification = '-----BEGIN CERTIFICATE-----\n' + signingKey + '\n-----END CERTIFICATE-----'
   return verify(token, signingCertification, {algorithms: ['RS256']}) as JwtPayload

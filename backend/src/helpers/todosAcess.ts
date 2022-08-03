@@ -1,11 +1,7 @@
 import * as AWS from 'aws-sdk'
-import * as AWSXRay from 'aws-xray-sdk'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../utils/logger'
 import { TodoItem } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate';
-
-const XAWS = AWSXRay.captureAWS(AWS)
 
 const logger = createLogger('TodosAccess')
 
@@ -14,9 +10,9 @@ const docClient = new AWS.DynamoDB.DocumentClient()
 const todosTableName = process.env.TODOS_TABLE
 const indexName = process.env.TODOS_CREATED_AT_INDEX
 const s3Bucket = process.env.ATTACHMENT_S3_BUCKET
-const urlExpired = process.env.SIGNED_URL_EXPIRATION
 
 export async function queryAllTodos(userId: string) {
+    logger.info('Start query all todos')
     const response = await docClient.query({
         TableName: todosTableName,
         IndexName: indexName,
@@ -36,6 +32,7 @@ export async function queryAllTodos(userId: string) {
 
 export async function createNewTodo(payload: TodoItem) {
     try {
+        logger.info('Start create new todo')
         await docClient.put({
             TableName: todosTableName,
             Item: payload
@@ -49,6 +46,7 @@ export async function createNewTodo(payload: TodoItem) {
             body: JSON.stringify({ items: payload })
         }
     } catch (error) {
+        logger.error(`Error create new todo: ${error.message}`)
         return {
             statusCode: 500,
             headers: {
@@ -62,6 +60,7 @@ export async function createNewTodo(payload: TodoItem) {
 }
 
 async function checkExistedTodo(userId: string, todoId: string) {
+    logger.info('Start check existed todo')
     const response = await docClient.get({
         TableName: todosTableName,
         Key: { userId, todoId }
@@ -73,6 +72,7 @@ export async function updateTodoById(userId: string, todoId: string, payload: To
     const isExistedTodo = await checkExistedTodo(userId, todoId)
     if (isExistedTodo) {
         try {
+            logger.info('Start update todo by id')
             await docClient.update({
                 TableName: todosTableName,
                 Key: { userId, todoId },
@@ -187,13 +187,4 @@ export async function generateUrlById(userId: string, todoId: string) {
         },
         body: 'Todo is not existed.'
     }
-}
-
-export function getUploadUrlById(todoId: string) {
-    const s3 = new XAWS.S3({ signatureVersion: 'v4' })
-    return s3.getSignedUrl('putObject', {
-        Bucket: s3Bucket,
-        Key: todoId,
-        Expires: urlExpired
-    })
 }

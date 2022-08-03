@@ -1,9 +1,8 @@
-import { queryAllTodos, createNewTodo, updateTodoById, deleteTodoById, generateUrlById, getUploadUrlById } from './todosAcess'
+import { queryAllTodos, createNewTodo, updateTodoById, deleteTodoById, generateUrlById } from './todosAcess'
+import { getUploadUrlById } from './attachmentUtils'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
-import { createLogger } from '../utils/logger'
 import * as uuid from 'uuid'
-import * as createError from 'http-errors'
 
 // TODO: Implement businessLogic ==> DONE
 export async function getAllTodos(userId: string) {
