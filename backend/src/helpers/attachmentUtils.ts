@@ -11,6 +11,6 @@ export function getUploadUrlById(todoId: string) {
     return s3.getSignedUrl('putObject', {
         Bucket: s3Bucket,
         Key: todoId,
-        Expires: urlExpired
+        Expires: Number(urlExpired)
     })
 }

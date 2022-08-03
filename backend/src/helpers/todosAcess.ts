@@ -53,7 +53,7 @@ export async function createNewTodo(payload: TodoItem) {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Credentials': true
             },
-            body: 'Something is wrong'
+            body: `Something is wrong: ${error.message}`
         }
     }
     
@@ -76,7 +76,10 @@ export async function updateTodoById(userId: string, todoId: string, payload: To
             await docClient.update({
                 TableName: todosTableName,
                 Key: { userId, todoId },
-                UpdateExpression: 'set name = :name, dueDate = :dueDate, done = :done',
+                UpdateExpression: 'set #todoName = :name, dueDate = :dueDate, done = :done',
+                ExpressionAttributeNames: {
+                    "#todoName": "name"
+                },
                 ExpressionAttributeValues: {
                     ':name': payload.name,
                     ':dueDate': payload.dueDate,
@@ -98,7 +101,7 @@ export async function updateTodoById(userId: string, todoId: string, payload: To
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Credentials': true
                 },
-                body: 'Something is wrong'
+                body: `Something is wrong: ${error.message}`
             }
         }
     }
@@ -126,7 +129,7 @@ export async function deleteTodoById(userId: string, todoId: string) {
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Credentials': true
                 },
-                body: {}
+                body: 'Delete Successfully'
             }
         } catch (error) {
             return {
@@ -135,7 +138,7 @@ export async function deleteTodoById(userId: string, todoId: string) {
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Credentials': true
                 },
-                body: 'Something is wrong'
+                body: `Something is wrong: ${error.message}`
             }
         }
     }
@@ -175,7 +178,7 @@ export async function generateUrlById(userId: string, todoId: string) {
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Credentials': true
                 },
-                body: 'Something is wrong'
+                body: `Something is wrong: ${error.message}`
             }
         }
     }

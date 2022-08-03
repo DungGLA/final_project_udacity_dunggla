@@ -3,8 +3,10 @@ import { getUploadUrlById } from './attachmentUtils'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 import * as uuid from 'uuid'
+import { createLogger } from '../utils/logger'
 
 // TODO: Implement businessLogic ==> DONE
+const logger = createLogger('todos')
 export async function getAllTodos(userId: string) {
     return queryAllTodos(userId)
 }
@@ -30,6 +32,27 @@ export async function deleteTodo(userId: string, todoId: string) {
 }
 
 export async function generateUploadUrl(userId: string, todoId: string) {
-    await generateUrlById(userId, todoId)
-    return getUploadUrlById(todoId)
+    try {
+        await generateUrlById(userId, todoId)
+        const uploadUrl = getUploadUrlById(todoId)
+        return {
+            statusCode: 200,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': true
+            },
+            body: JSON.stringify({ uploadUrl })
+        }
+    } catch (error) {
+        logger.error(`Error generate url ${error.message}`)
+        return {
+            statusCode: 500,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': true
+            },
+            body: `Something is wrong: ${error.message}`
+        }
+    }
+    
 }

@@ -51,11 +51,18 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         name: this.state.newTodoName,
         dueDate
       })
+      console.log(this.state.todos)
+      console.log(newTodo)
       this.setState({
         todos: [...this.state.todos, newTodo],
         newTodoName: ''
       })
-    } catch {
+      console.log(this.state.todos)
+      console.log(newTodo)
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log(e.message)
+      }
       alert('Todo creation failed')
     }
   }
@@ -72,6 +79,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
   }
 
   onTodoCheck = async (pos: number) => {
+    console.log('check')
     try {
       const todo = this.state.todos[pos]
       await patchTodo(this.props.auth.getIdToken(), todo.todoId, {
@@ -84,8 +92,10 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
           [pos]: { done: { $set: !todo.done } }
         })
       })
-    } catch {
-      alert('Todo deletion failed')
+    } catch(e) {
+      if (e instanceof Error) {
+        alert(`Todo deletion failed ${e.message}`)
+      }
     }
   }
 
@@ -97,7 +107,9 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         loadingTodos: false
       })
     } catch (e) {
-      alert(`Failed to fetch todos: ${e.message}`)
+      if (e instanceof Error) {
+        alert(`Failed to fetch todos: ${e.message}`)
+      }
     }
   }
 
