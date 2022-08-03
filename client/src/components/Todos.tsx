@@ -2,6 +2,7 @@ import dateFormat from 'dateformat'
 import { History } from 'history'
 import update from 'immutability-helper'
 import * as React from 'react'
+import { Link } from 'react-router-dom'
 import {
   Button,
   Checkbox,
@@ -42,6 +43,22 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
 
   onEditButtonClick = (todoId: string) => {
     this.props.history.push(`/todos/${todoId}/edit`)
+  }
+
+  onViewDetailLink = (todoId: string) => {
+    const todo = this.state.todos.filter(todo => todo.todoId === todoId)
+    if (todo.length > 0) {
+      const todoView = {
+        'todoId': todo[0].todoId,
+        'attachmentUrl': todo[0].attachmentUrl,
+        'dueDate': todo[0].dueDate,
+        'createdAt': todo[0].createdAt,
+        'name': todo[0].name,
+        'done': todo[0].done
+      }
+      localStorage.setItem('todo', JSON.stringify(todoView));
+    }
+    this.props.history.push(`/todos/${todoId}`)
   }
 
   onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
@@ -187,8 +204,8 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
               <Grid.Column width={10} verticalAlign="middle">
                 {todo.name}
               </Grid.Column>
-              <Grid.Column width={3} floated="right">
-                {todo.dueDate}
+              <Grid.Column width={2} floated="right">
+                <Button onClick={() => this.onViewDetailLink(todo.todoId)}>View Detail</Button>
               </Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
@@ -208,9 +225,6 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                   <Icon name="delete" />
                 </Button>
               </Grid.Column>
-              {todo.attachmentUrl && (
-                <Image src={todo.attachmentUrl} size="small" wrapped />
-              )}
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>
