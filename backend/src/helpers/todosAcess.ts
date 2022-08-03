@@ -1,12 +1,14 @@
 import * as AWS from 'aws-sdk'
 import { createLogger } from '../utils/logger'
 import { TodoItem } from '../models/TodoItem'
-import { TodoUpdate } from '../models/TodoUpdate';
+import { TodoUpdate } from '../models/TodoUpdate'
+const AWSXRay = require('aws-xray-sdk')
 
 const logger = createLogger('TodosAccess')
 
 // TODO: Implement the dataLayer logic ==> DONE
-const docClient = new AWS.DynamoDB.DocumentClient()
+const XAWS = AWSXRay.captureAWS(AWS)
+const docClient = new XAWS.DynamoDB.DocumentClient()
 const todosTableName = process.env.TODOS_TABLE
 const indexName = process.env.TODOS_CREATED_AT_INDEX
 const s3Bucket = process.env.ATTACHMENT_S3_BUCKET
