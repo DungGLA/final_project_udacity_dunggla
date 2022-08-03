@@ -9,9 +9,9 @@ import { createTodo } from '../../helpers/todos'
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const payload: CreateTodoRequest = JSON.parse(event.body)
-    // TODO: Implement creating a new TODO item
-    const token = event.headers.Authorization.split(' ')[1]
-    return await createTodo(token, payload)
+    // TODO: Implement creating a new TODO item ==> DONE
+    const userId = getUserId(event)
+    return await createTodo(userId, payload)
   }
 )
 
