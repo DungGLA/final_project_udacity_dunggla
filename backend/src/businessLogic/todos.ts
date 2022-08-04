@@ -1,5 +1,5 @@
-import { queryAllTodos, createNewTodo, updateTodoById, deleteTodoById, generateUrlById } from './todosAcess'
-import { getUploadUrlById } from './attachmentUtils'
+import { queryAllTodos, createNewTodo, updateTodoById, deleteTodoById, generateUrlById } from '../dataLayer/todosAcess'
+import { getUploadUrlById } from '../fileStorage/attachmentUtils'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 import * as uuid from 'uuid'
