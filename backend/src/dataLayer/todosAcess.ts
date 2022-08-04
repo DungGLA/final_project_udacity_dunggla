@@ -19,9 +19,10 @@ export async function queryTodos(userId: string, searchValue: string) {
         TableName: todosTableName,
         IndexName: indexName,
         ScanIndexForward: true,
-        KeyConditionExpression: 'userId = :userId AND contains(#todoName, :searchVal)',
-        ExpressionAttributeNames: { '#todoName': 'name'},
-        ExpressionAttributeValues: { ':userId': userId, ':searchVal': searchValue },
+        KeyConditionExpression: 'userId = :userId',
+        FilterExpression: "contains(#name, :name)",
+        ExpressionAttributeNames: { '#name': 'name'},
+        ExpressionAttributeValues: { ':userId': userId, ':name': searchValue },
     }).promise()
     return {
         statusCode: 200,
