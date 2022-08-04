@@ -109,7 +109,6 @@ export default class App extends Component<AppProps, AppState> {
           path="/todos/:todoId"
           exact
           render={props => {
-            console.log(props)
             return <ViewTodo {...props} auth={this.props.auth} />
           }}
         />

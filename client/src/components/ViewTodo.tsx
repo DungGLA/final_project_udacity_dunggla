@@ -30,7 +30,6 @@ export class ViewTodo extends React.PureComponent<TodoProps, TodoState> {
         if (todo) {
             // eslint-disable-next-line react/no-direct-mutation-state
             this.state.todo = JSON.parse(todo)
-            console.log(this.state.todo)
         }
         return (
           <div>
