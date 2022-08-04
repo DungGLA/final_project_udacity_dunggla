@@ -1,4 +1,4 @@
-import { queryAllTodos, createNewTodo, updateTodoById, deleteTodoById, generateUrlById } from '../dataLayer/todosAcess'
+import { queryTodos, createNewTodo, updateTodoById, deleteTodoById, generateUrlById } from '../dataLayer/todosAcess'
 import { getUploadUrlById } from '../fileStorage/attachmentUtils'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
@@ -7,8 +7,8 @@ import { createLogger } from '../utils/logger'
 
 // TODO: Implement businessLogic ==> DONE
 const logger = createLogger('todos')
-export async function getAllTodos(userId: string) {
-    return queryAllTodos(userId)
+export async function getTodos(userId: string, searchValue: string) {
+    return queryTodos(userId, searchValue)
 }
 
 export async function createTodo(userId: string, todoRequest: CreateTodoRequest) {

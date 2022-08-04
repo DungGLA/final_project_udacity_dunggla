@@ -4,7 +4,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
 
-import { getAllTodos as getTodosForUser } from '../../businessLogic/todos'
+import { getTodos as getTodosForUser } from '../../businessLogic/todos'
 import { getUserId } from '../utils';
 import { createLogger } from '../../utils/logger'
 
@@ -14,8 +14,11 @@ export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     // Write your code here
     logger.info('Processing event: ', event)
+    const searchValue = event.queryStringParameters?.searchValue
+    console.log(searchValue)
     const userId = getUserId(event)
-    return await getTodosForUser(userId)
+    const search = searchValue || ''
+    return await getTodosForUser(userId, search.trim())
   })
 handler.use(
   cors({

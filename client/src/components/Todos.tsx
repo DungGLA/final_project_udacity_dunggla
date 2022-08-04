@@ -2,7 +2,6 @@ import dateFormat from 'dateformat'
 import { History } from 'history'
 import update from 'immutability-helper'
 import * as React from 'react'
-import { Link } from 'react-router-dom'
 import {
   Button,
   Checkbox,
@@ -28,37 +27,27 @@ interface TodosState {
   todos: Todo[]
   newTodoName: string
   loadingTodos: boolean
+  searchValue: string
 }
 
 export class Todos extends React.PureComponent<TodosProps, TodosState> {
   state: TodosState = {
     todos: [],
     newTodoName: '',
-    loadingTodos: true
+    loadingTodos: true,
+    searchValue: ''
   }
 
   handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ newTodoName: event.target.value })
   }
 
-  onEditButtonClick = (todoId: string) => {
-    this.props.history.push(`/todos/${todoId}/edit`)
+  handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ searchValue: event.target.value })
   }
 
-  onViewDetailLink = (todoId: string) => {
-    const todo = this.state.todos.filter(todo => todo.todoId === todoId)
-    if (todo.length > 0) {
-      const todoView = {
-        'todoId': todo[0].todoId,
-        'attachmentUrl': todo[0].attachmentUrl,
-        'dueDate': todo[0].dueDate,
-        'createdAt': todo[0].createdAt,
-        'name': todo[0].name,
-        'done': todo[0].done
-      }
-      localStorage.setItem('todo', JSON.stringify(todoView));
-    }
-    this.props.history.push(`/todos/${todoId}`)
+  onEditButtonClick = (todoId: string) => {
+    this.props.history.push(`/todos/${todoId}/edit`)
   }
 
   onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
@@ -116,9 +105,17 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     }
   }
 
+  searchTodo = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+    this.getTodoList(this.state.searchValue)
+  }
+
   async componentDidMount() {
+    this.getTodoList('')
+  }
+
+  getTodoList= async (searchVal: string) => {
     try {
-      const todos = await getTodos(this.props.auth.getIdToken())
+      const todos = await getTodos(this.props.auth.getIdToken(), searchVal)
       this.setState({
         todos,
         loadingTodos: false
@@ -136,10 +133,51 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         <Header as="h1">TODOs</Header>
 
         {this.renderCreateTodoInput()}
-
+        <Grid.Row>
+          <Grid.Column width={8}>
+            <Input
+              action={{
+                color: 'teal',
+                labelPosition: 'right',
+                icon: 'search',
+                content: 'Search',
+                onClick: this.searchTodo
+              }}
+              actionPosition="left"
+              placeholder="Search name todo..."
+              onChange={this.handleSearchInputChange}
+            />
+          </Grid.Column>
+          <Grid.Column width={16}>
+            <Divider />
+          </Grid.Column>
+        </Grid.Row>
         {this.renderTodos()}
       </div>
     )
+  }
+
+  renderSearchBar() {
+    <Grid.Row>
+        <Grid.Column width={16}>
+          <Input
+            action={{
+              color: 'teal',
+              labelPosition: 'left',
+              icon: 'add',
+              content: 'Search',
+              onClick: this.onTodoCreate
+            }}
+            fluid
+            actionPosition="left"
+            placeholder="Search name todo..."
+            onChange={this.handleNameChange}
+          />
+        </Grid.Column>
+        <Grid.Column width={16}>
+          <Divider />
+        </Grid.Column>
+      </Grid.Row>
   }
 
   renderCreateTodoInput() {
@@ -171,7 +209,6 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     if (this.state.loadingTodos) {
       return this.renderLoading()
     }
-
     return this.renderTodosList()
   }
 
@@ -200,8 +237,8 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
               <Grid.Column width={10} verticalAlign="middle">
                 {todo.name}
               </Grid.Column>
-              <Grid.Column width={2} floated="right">
-                <Button onClick={() => this.onViewDetailLink(todo.todoId)}>View Detail</Button>
+              <Grid.Column width={3} floated="right">
+                {todo.dueDate}
               </Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
@@ -221,6 +258,9 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                   <Icon name="delete" />
                 </Button>
               </Grid.Column>
+              {todo.attachmentUrl && (
+                <Image src={todo.attachmentUrl} size="small" wrapped />
+              )}
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>

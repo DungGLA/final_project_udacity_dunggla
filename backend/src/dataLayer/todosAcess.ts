@@ -13,14 +13,15 @@ const todosTableName = process.env.TODOS_TABLE
 const indexName = process.env.TODOS_CREATED_AT_INDEX
 const s3Bucket = process.env.ATTACHMENT_S3_BUCKET
 
-export async function queryAllTodos(userId: string) {
+export async function queryTodos(userId: string, searchValue: string) {
     logger.info('Start query all todos')
     const response = await docClient.query({
         TableName: todosTableName,
         IndexName: indexName,
         ScanIndexForward: true,
-        KeyConditionExpression: 'userId = :userId',
-        ExpressionAttributeValues: { ':userId': userId }
+        KeyConditionExpression: 'userId = :userId AND contains(#todoName, :searchVal)',
+        ExpressionAttributeNames: { '#todoName': 'name'},
+        ExpressionAttributeValues: { ':userId': userId, ':searchVal': searchValue },
     }).promise()
     return {
         statusCode: 200,

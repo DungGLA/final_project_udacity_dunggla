@@ -7,7 +7,7 @@ import { EditTodo } from './components/EditTodo'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
 import { Todos } from './components/Todos'
-import { ViewTodo } from './components/ViewTodo'
+// import { ViewTodo } from './components/ViewTodo'
 
 export interface AppProps {}
 
@@ -105,13 +105,13 @@ export default class App extends Component<AppProps, AppState> {
           }}
         />
 
-        <Route
+        {/* <Route
           path="/todos/:todoId"
           exact
           render={props => {
             return <ViewTodo {...props} auth={this.props.auth} />
           }}
-        />
+        /> */}
 
         <Route component={NotFound} />
       </Switch>
